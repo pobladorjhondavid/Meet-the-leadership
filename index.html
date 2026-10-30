@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Leadership | ITPE3</title>
+<style>
+  :root {
+    --bg: #ffc2d9;
+    --dots: #ffb0cd;
+    --paper: #fffdfd;
+    --ink: #3b0d24;
+    --soft: #7d3b58;
+    --hot: #e91e78;
+    --tape: rgba(255, 236, 160, .85);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--dots) 2px, transparent 2px);
+    background-size: 26px 26px;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+ 
+  /* Header */
+  header { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end; justify-content: space-between; padding: 56px 0 24px; }
+  .sticker {
+    display: inline-block; background: var(--hot); color: #fff; font-weight: 700;
+    padding: 4px 14px; border-radius: 6px; transform: rotate(-3deg); margin-bottom: 14px;
+  }
+  h1 {
+    margin: 0; font-size: clamp(2.4rem, 7vw, 4.4rem); line-height: .98;
+    font-weight: 900; letter-spacing: -.03em;
+  }
+  header p { max-width: 46ch; color: var(--soft); margin: 14px 0 0; }
+  .search input {
+    width: 260px; max-width: 100%; padding: 12px 18px; font: inherit;
+    border: 2px solid var(--ink); border-radius: 999px; background: var(--paper); color: var(--ink);
+  }
+  .search input:focus { outline: 3px solid var(--hot); outline-offset: 2px; }
+ 
+  /* Filter chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px 0 20px; }
+  .chips button {
+    font: inherit; font-weight: 600; cursor: pointer; padding: 8px 18px;
+    border: 2px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink);
+  }
+  .chips button:hover { background: var(--paper); }
+  .chips button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .chips button:focus-visible { outline: 3px solid var(--hot); outline-offset: 2px; }
+ 
+  /* Groups */
+  .group { margin: 34px 0 10px; }
+  .group h2 {
+    display: flex; align-items: center; gap: 14px; margin: 0 0 22px; font-size: 1.4rem;
+  }
+  .group h2::after { content: ""; flex: 1; border-top: 3px dashed var(--ink); opacity: .35; }
+  .group .count { font-size: .9rem; font-weight: 600; background: var(--paper); border-radius: 999px; padding: 2px 12px; }
+  .board { display: flex; flex-wrap: wrap; gap: 34px 28px; justify-content: flex-start; }
+ 
+  /* Polaroid */
+  .polaroid {
+    position: relative; width: 230px; margin: 0; padding: 12px 12px 16px;
+    background: var(--paper); border-radius: 4px;
+    box-shadow: 0 8px 18px rgba(120, 20, 70, .25);
+    transform: rotate(var(--tilt, 0deg)); transition: transform .2s;
+  }
+  .polaroid:nth-child(3n+1) { --tilt: -2.5deg; }
+  .polaroid:nth-child(3n+2) { --tilt: 1.8deg; }
+  .polaroid:nth-child(3n)   { --tilt: -1deg; }
+  .polaroid:hover { transform: rotate(0) translateY(-4px); }
+  .polaroid::before {
+    content: ""; position: absolute; top: -12px; left: 50%; width: 70px; height: 22px;
+    margin-left: -35px; background: var(--tape); transform: rotate(-2deg);
+  }
+  .pic {
+    aspect-ratio: 1; background: #ffd9e8; display: grid; place-items: center;
+    font-size: 3rem; font-weight: 800; color: var(--hot);
+  }
+  .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .polaroid figcaption { padding-top: 14px; text-align: center; }
+  .polaroid h3 { margin: 0; font-size: .95rem; line-height: 1.25; }
+  .polaroid .role {
+    margin-top: 6px; font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+    font-size: .95rem; color: var(--hot);
+  }
+  .polaroid .unit { margin-top: 4px; font-size: .78rem; color: var(--soft); }
+  .polaroid .quote { margin: 10px 0 0; font-size: .82rem; font-style: italic; color: var(--soft); }
+ 
+  .none { text-align: center; padding: 60px 0; font-weight: 600; }
+  footer { margin-top: 60px; padding: 28px 20px; text-align: center; background: var(--ink); color: #ffd9e8; }
+ 
+  @media (max-width: 560px) { .polaroid { width: calc(50% - 14px); } .board { gap: 30px 16px; } }
+  @media (max-width: 380px) { .polaroid { width: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .polaroid { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <span class="sticker">ITPE3 · Web Systems Technologies</span>
+      <h1>Campus<br>Leadership</h1>
+      <p>Faces behind the university: leaders, administrators, deans, and the faculty and staff of the College of Informatics and Computing Innovations.</p>
+    </div>
+    <label class="search">
+      <span class="sr" style="position:absolute;left:-9999px">Search people</span>
+      <input id="q" type="search" placeholder="Search a name or role…">
+    </label>
+  </header>
+ 
+  <div class="chips" id="chips" role="group" aria-label="Filter by group"></div>
+  <main id="out"></main>
+</div>
+ 
+<footer>
+  Campus Leadership • ITPE3 – Web Systems Technologies • 1st Semester, AY 2026–2027
+</footer>
+ 
+<script>
+  /* Edit the list to change people. Put image files in the same folder as this HTML file. */
+  const groups = [
+    { id: "leaders", label: "University & Campus", people: [
+      { name: "Dr. NORDY SIASON, JR., CESO VI", role: "University President", img: "president.png",
+        quote: "Leading with purpose, integrity, and a commitment to excellence in education." },
+      { name: "MICHAEL B. DIZON, EdD, PhD", role: "Campus Administrator", img: "administrator.png" },
+      { name: "MELBY P. PARREÑO, MILE", role: "Administrative Officer", img: "administrative.jpg" }
+    ]},
+    { id: "deans", label: "College Deans", people: [
+      { name: "NOLI L. GERONA, PhD", role: "Dean", unit: "College of Agriculture", img: "coag.jpg" },
+      { name: "JANICE H. CHING, DDM-ET", role: "Dean", unit: "College of Business, Management and Sustainable Development", img: "cbmsd.jpg" },
+      { name: "RENE T. ESTOMO, PhD", role: "Dean", unit: "College of Education", img: "coed.jpg" },
+      { name: "DR. WENDA D. PANES, EdD", role: "Dean", unit: "College of Informatics and Computing Innovations", img: "cici.jpg" }
+    ]},
+    { id: "faculty", label: "CICI Faculty", people: [
+      { name: "ANALIZA ALINGALAN", role: "Faculty Member", img: "alingalan.jpg" },
+      { name: "WEENA J. BULNES", role: "Faculty Member", img: "bulnes.png" },
+      { name: "DYTHNE P. DACUDAO", role: "Faculty Member", img: "dacudao.jpg" },
+      { name: "ALLAN DAVE TAGACAY", role: "Faculty Member", img: "tagacay.jpg" },
+      { name: "IAN P. SUGATAN", role: "Faculty Member", img: "sugatan.png" },
+      { name: "IVAN SILVESTRE", role: "Faculty Member", img: "silvestre.jpg" }
+    ]},
+    { id: "staff", label: "CICI Staff", people: [
+      { name: "ANDREA DE LOS SANTOS", role: "Staff Member", img: "delossantos.png" },
+      { name: "JAY MICHAEL O. BORCILLO", role: "Staff Member", img: "borcillo.jpg" },
+      { name: "DWAYNE PADERNAL", role: "Staff Member", img: "padernal.jpg" }
+    ]}
+  ];
+ 
+  let active = "all", term = "";
+  const out = document.getElementById("out");
+  const chips = document.getElementById("chips");
+ 
+  const initials = n => n.replace(/^Dr\.\s*/i, "").split(/[\s,]+/).filter(w => /^[A-ZÑ]{2,}/.test(w)).slice(0, 2).map(w => w[0]).join("");
+ 
+  function card(p) {
+    const f = document.createElement("figure");
+    f.className = "polaroid";
+    const pic = document.createElement("div");
+    pic.className = "pic";
+    const img = document.createElement("img");
+    img.src = p.img; img.alt = p.name;
+    img.onerror = () => { pic.textContent = initials(p.name); };
+    pic.appendChild(img);
+    const cap = document.createElement("figcaption");
+    const h = document.createElement("h3"); h.textContent = p.name;
+    const r = document.createElement("div"); r.className = "role"; r.textContent = p.role;
+    cap.append(h, r);
+    if (p.unit) { const u = document.createElement("div"); u.className = "unit"; u.textContent = p.unit; cap.append(u); }
+    if (p.quote) { const q = document.createElement("p"); q.className = "quote"; q.textContent = "“" + p.quote + "”"; cap.append(q); }
+    f.append(pic, cap);
+    return f;
+  }
+ 
+  function render() {
+    out.innerHTML = "";
+    let shown = 0;
+    groups.forEach(g => {
+      if (active !== "all" && active !== g.id) return;
+      const list = g.people.filter(p => (p.name + " " + p.role + " " + (p.unit || "")).toLowerCase().includes(term));
+      if (!list.length) return;
+      shown += list.length;
+      const sec = document.createElement("section");
+      sec.className = "group";
+      const h = document.createElement("h2");
+      h.textContent = g.label + " ";
+      const c = document.createElement("span"); c.className = "count"; c.textContent = list.length;
+      h.append(c);
+      const board = document.createElement("div"); board.className = "board";
+      list.forEach(p => board.append(card(p)));
+      sec.append(h, board);
+      out.append(sec);
+    });
+    if (!shown) out.innerHTML = '<p class="none">No one matches that search.</p>';
+  }
+ 
+  [{ id: "all", label: "Everyone" }, ...groups].forEach(g => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = g.label;
+    b.setAttribute("aria-pressed", g.id === active);
+    b.onclick = () => {
+      active = g.id;
+      chips.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+      render();
+    };
+    chips.append(b);
+  });
+  document.getElementById("q").addEventListener("input", e => { term = e.target.value.trim().toLowerCase(); render(); });
+  render();
+</script>
+</body>
+</html>
+ 
